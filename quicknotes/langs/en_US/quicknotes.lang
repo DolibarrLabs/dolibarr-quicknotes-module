@@ -6,7 +6,7 @@
 # Generic
 #
 QuickNotes = Quick-Notes
-QuickNotesDescription = Allows you to take & view your notes from any Dolibarr page
+QuickNotesDescription = Allows each user to take & view their notes from any Dolibarr page
 Notes = Notes
 ClearAll = Clear
 SaveAndClose = Save & Close

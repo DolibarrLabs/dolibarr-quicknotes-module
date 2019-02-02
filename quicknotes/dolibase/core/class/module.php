@@ -72,7 +72,7 @@ class DolibaseModule extends DolibarrModules
 		$this->config = $dolibase_config;
 
 		// Load lang files
-		$langs->load("module@".$this->config['langs']['path']);
+		$langs->load('module@'.$this->config['langs']['path']);
 
 		// Module configuration
 		$this->db              = $db;
@@ -182,7 +182,7 @@ class DolibaseModule extends DolibarrModules
 				// If a new version is available
 				if (isset($module_version[1]) && compare_version($module_version[1], '>', $this->config['module']['version']))
 				{
-					$this->version .= ' <a href="'.$this->config['module']['url'].'" title="'.$langs->trans('NewVersionAvailable', $module_version[1]).'" target="_blank"><img src="'.dolibase_buildurl('/core/img/update.png').'" class="valignmiddle" width="24" alt="'.$module_version[1].'"></a>';
+					$this->version .= ' <a href="'.$this->config['module']['url'].'" title="'.$langs->trans('NewVersionAvailable', $module_version[1]).'" target="_blank"><img src="'.dolibase_buildurl('core/img/update.png').'" class="valignmiddle" width="24" alt="'.$module_version[1].'"></a>';
 				}
 			}
 		}
@@ -771,4 +771,4 @@ class DolibaseModule extends DolibarrModules
 	}
 }
 
-}
+} // end if (! class_exists('DolibaseModule'))

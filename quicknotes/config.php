@@ -36,7 +36,7 @@ $dolibase_config['module'] = array(
 $dolibase_config['author'] = array(
 	'name'          => 'AXeL',
 	'url'           => 'https://github.com/AXeL-dev',
-	'email'         => 'anass_denna@hotmail.fr',
+	'email'         => 'contact.axel.dev@gmail.com',
 	'dolistore_url' => 'https://www.dolistore.com/en/search?orderby=position&orderway=desc&search_query=axel'
 );
 

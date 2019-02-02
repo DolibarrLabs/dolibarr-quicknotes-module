@@ -15,6 +15,8 @@
  * 
  */
 
+if (! class_exists('QueryBuilder')) {
+
 /**
  * QueryBuilder class
  *
@@ -77,7 +79,7 @@ class QueryBuilder
 			}
 		}
 
-		$query = implode(" ", $parts);
+		$query = implode(' ', $parts);
 
 		return $query;
 	}
@@ -518,3 +520,5 @@ class QueryBuilder
 		return $this;
 	}
 }
+
+} // end if (! class_exists('QueryBuilder'))

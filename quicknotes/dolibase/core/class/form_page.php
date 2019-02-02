@@ -15,9 +15,9 @@
  * 
  */
 
-dolibase_include_once('/core/class/page.php');
-dolibase_include_once('/core/class/custom_form.php');
-dolibase_include_once('/core/class/field.php');
+dolibase_include_once('core/class/page.php');
+dolibase_include_once('core/class/custom_form.php');
+dolibase_include_once('core/class/field.php');
 
 /**
  * FormPage class
@@ -54,7 +54,7 @@ class FormPage extends Page
 
 		// Add custom js
 		if ($conf->use_javascript_ajax) {
-			$this->appendToHead('<script type="text/javascript" src="'.dolibase_buildurl('/core/js/form.js.php').'"></script>'."\n");
+			$this->appendToHead('<script type="text/javascript" src="'.dolibase_buildurl('core/js/form.js.php').'"></script>'."\n");
 		}
 
 		parent::__construct($page_title, $access_perm);
@@ -103,8 +103,8 @@ class FormPage extends Page
 	{
 		global $dolibase_config, $langs;
 
-		$langs->load("errors");
-		$langs->load("validation@".$dolibase_config['langs']['path']);
+		$langs->load('errors');
+		$langs->load('validation@'.$dolibase_config['main']['path']);
 
 		$error = 0;
 
@@ -127,62 +127,68 @@ class FormPage extends Page
 		// required
 		$is_required = in_array('required', $validation_rules);
 		if ($is_required && $field_value == '') {
-			setEventMessage($langs->transnoentities("ErrorFieldRequired", $langs->transnoentities($field_trans)), 'errors');
+			setEventMessage($langs->transnoentities('ErrorFieldRequired', $langs->transnoentities($field_trans)), 'errors');
 			$error++;
 		}
 
 		// numeric (escape if empty)
 		else if (in_array('numeric', $validation_rules) && $field_value != '' && ! is_numeric($field_value)) {
-			setEventMessage($langs->transnoentities("ErrorFieldMustBeANumeric", $langs->transnoentities($field_trans)), 'errors');
+			setEventMessage($langs->transnoentities('ErrorFieldMustBeANumeric', $langs->transnoentities($field_trans)), 'errors');
 			$error++;
 		}
 
 		// string (escape if empty)
 		else if (in_array('string', $validation_rules) && $field_value != '' && ! is_string($field_value)) {
-			setEventMessage($langs->transnoentities("ErrorFieldFormat", $langs->transnoentities($field_trans)), 'errors');
+			setEventMessage($langs->transnoentities('ErrorFieldFormat', $langs->transnoentities($field_trans)), 'errors');
 			$error++;
 		}
 
 		// validEmail (escape if empty)
-		else if (in_array('validEmail', $validation_rules) && $field_value != '' && ! preg_match('/^[\w.-]+@[\w.-]+\.[a-z]{2,6}$/i', $field_value)) {
-			setEventMessage($langs->transnoentities("ErrorFieldFormat", $langs->transnoentities($field_trans)), 'errors');
+		else if (in_array('validEmail', $validation_rules) && $field_value != '' && ! filter_var($field_value, FILTER_VALIDATE_EMAIL)) {
+			setEventMessage($langs->transnoentities('ErrorFieldFormat', $langs->transnoentities($field_trans)), 'errors');
 			$error++;
 		}
 
 		// validTel (escape if empty)
 		else if (in_array('validTel', $validation_rules) && $field_value != '' && ! preg_match('/^[0-9\-\(\)\/\+\s]*$/', $field_value)) {
-			setEventMessage($langs->transnoentities("ErrorFieldFormat", $langs->transnoentities($field_trans)), 'errors');
+			setEventMessage($langs->transnoentities('ErrorFieldFormat', $langs->transnoentities($field_trans)), 'errors');
+			$error++;
+		}
+
+		// validUrl (escape if empty)
+		else if (in_array('validUrl', $validation_rules) && $field_value != '' && ! filter_var($field_value, FILTER_VALIDATE_URL)) {
+			setEventMessage($langs->transnoentities('ErrorFieldFormat', $langs->transnoentities($field_trans)), 'errors');
 			$error++;
 		}
 
 		// validID (escape if empty)
 		else if (in_array('validID', $validation_rules) && $field_value != '' && is_numeric($field_value) && $field_value <= 0) {
-			$error_msg = ($is_required ? "ErrorFieldRequired" : "ErrorFieldFormat");
+			$error_msg = ($is_required ? 'ErrorFieldRequired' : 'ErrorFieldFormat');
 			setEventMessage($langs->transnoentities($error_msg, $langs->transnoentities($field_trans)), 'errors');
 			$error++;
 		}
 
 		// greaterThan (escape if empty)
 		else if (array_match('/^greaterThan\(([0-9]+)\)$/i', $validation_rules, $matches) && $field_value != '' && is_numeric($field_value) && $field_value <= $matches[1]) {
-			setEventMessage($langs->transnoentities("ErrorFieldMustBeGreaterThan", $langs->transnoentities($field_trans), $matches[1]), 'errors');
+			setEventMessage($langs->transnoentities('ErrorFieldMustBeGreaterThan', $langs->transnoentities($field_trans), $matches[1]), 'errors');
 			$error++;
 		}
 
 		// lessThan (escape if empty)
 		else if (array_match('/^lessThan\(([0-9]+)\)$/i', $validation_rules, $matches) && $field_value != '' && is_numeric($field_value) && $field_value >= $matches[1]) {
-			setEventMessage($langs->transnoentities("ErrorFieldMustBeLessThan", $langs->transnoentities($field_trans), $matches[1]), 'errors');
+			setEventMessage($langs->transnoentities('ErrorFieldMustBeLessThan', $langs->transnoentities($field_trans), $matches[1]), 'errors');
 			$error++;
 		}
 
 		// minLength (escape if empty)
 		else if (array_match('/^minLength\(([0-9]+)\)$/i', $validation_rules, $matches) && $field_value != '' && strlen($field_value) < $matches[1]) {
-			setEventMessage($langs->transnoentities("ErrorFieldMustHaveMinLength", $langs->transnoentities($field_trans), $matches[1]), 'errors');
+			setEventMessage($langs->transnoentities('ErrorFieldMustHaveMinLength', $langs->transnoentities($field_trans), $matches[1]), 'errors');
 			$error++;
 		}
 
 		// maxLength (escape if empty)
 		else if (array_match('/^maxLength\(([0-9]+)\)$/i', $validation_rules, $matches) && $field_value != '' && strlen($field_value) > $matches[1]) {
-			setEventMessage($langs->transnoentities("ErrorFieldMustHaveMaxLength", $langs->transnoentities($field_trans), $matches[1]), 'errors');
+			setEventMessage($langs->transnoentities('ErrorFieldMustHaveMaxLength', $langs->transnoentities($field_trans), $matches[1]), 'errors');
 			$error++;
 		}
 
@@ -218,24 +224,36 @@ class FormPage extends Page
 	 * @param     $question           Message question / content
 	 * @param     $action             Action to do after confirmation
 	 * @param     $question_param     Question parameter
+	 * @param     $dialog_id_suffix   Dialog id suffix (used to show the dialog without reloading the page)
+	 * @return    $this
 	 */
-	public function askForConfirmation($url, $title, $question, $action, $question_param = '')
+	public function askForConfirmation($url, $title, $question, $action, $question_param = '', $dialog_id_suffix = '')
 	{
 		global $langs, $dolibase_config;
 
-		$use_ajax = $dolibase_config['main']['use_ajax_on_confirm'] ? 1 : 0;
+		if (! empty($dialog_id_suffix)) {
+			$use_ajax = $dialog_id_suffix;
+		}
+		else {
+			$use_ajax = $dolibase_config['main']['use_ajax_on_confirm'] ? 1 : 0;
+		}
 
-		$this->body = $this->form->formconfirm($url, $langs->trans($title), $langs->trans($question, $question_param), $action, '', '', $use_ajax);
+		$this->body.= $this->form->formconfirm($url, $langs->trans($title), $langs->trans($question, $question_param), $action, '', '', $use_ajax);
+
+		return $this;
 	}
 
 	/**
 	 * Append a content to page body
 	 *
 	 * @param     $content     content to add
+	 * @return    $this
 	 */
 	public function appendToBody($content)
 	{
-		$this->body = $content;
+		$this->body.= $content;
+
+		return $this;
 	}
 
 	/**

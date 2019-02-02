@@ -75,10 +75,13 @@ abstract class CrudObject extends CommonObject
 	 * Set table name
 	 * 
 	 * @param  $table_name  table name
+	 * @return $this
 	 */
 	public function setTableName($table_name)
 	{
 		$this->table_element = $table_name;
+
+		return $this;
 	}
 
 	/**
@@ -181,7 +184,7 @@ abstract class CrudObject extends CommonObject
 					}
 				}
 
-				// enssure that $this->id is filled because we use it in update & delete functions
+				// ensure that $this->id is filled because we use it in update & delete functions
 				if (! in_array('id', $this->fetch_fields)) {
 					$this->id = $obj->{$this->pk_name};
 				}
@@ -229,7 +232,7 @@ abstract class CrudObject extends CommonObject
 		}
 
 		// SELECT request
-		$sql = "SELECT ";
+		$sql = "SELECT DISTINCT ";
 		foreach ($this->fetch_fields as $field) {
 			$sql.= "`" . $field . "`,";
 		}
@@ -263,7 +266,7 @@ abstract class CrudObject extends CommonObject
 						}
 					}
 
-					// enssure that $this->id is filled because we use it in update/delete/getNomUrl functions
+					// ensure that $this->id is filled because we use it in update/delete/getNomUrl functions
 					if ($set_id) {
 						$this->rows[$i]->id = $obj->{$this->pk_name};
 					}

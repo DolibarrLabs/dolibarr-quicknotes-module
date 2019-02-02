@@ -90,7 +90,7 @@ class CustomForm extends Form
 	 *
 	 * @param   $name           text area name
 	 * @param   $value          text area value
-	 * @param   $toolbarname    toolbar name
+	 * @param   $toolbarname    toolbar name, possible values: 'dolibarr_details', 'dolibarr_readonly', 'dolibarr_notes', 'dolibarr_mailings'
 	 * @param   $height         text area height
 	 * @return  string          text area HTML
 	 */
@@ -103,6 +103,19 @@ class CustomForm extends Form
 		$doleditor = new DolEditor($name, $value, '', $height, $toolbarname, 'In', false, false, true, ROWS_3, '90%');
 
 		return $doleditor->Create(1);
+	}
+
+	/**
+	 * Return a file input
+	 *
+	 * @since   2.9.5
+	 * @param   $name    input name
+	 * @param   $accept  input accept attribute
+	 * @return  string   input HTML
+	 */
+	public function fileInput($name, $accept = '')
+	{
+		return '<input type="file" class="flat" name="'.$name.'"'.(! empty($accept) ? ' accept="'.$accept.'"' : '').'>';
 	}
 
 	/**
@@ -130,7 +143,7 @@ class CustomForm extends Form
 	 */
 	public function rangeInput($name, $value, $min = 0, $max = 100)
 	{
-		return '<input type="range" min="'.$min.'" max="'.$max.'" class="flat" name="'.$name.'" value="'.$value.'">';
+		return '<input type="range" min="'.$min.'" max="'.$max.'" class="flat valignmiddle" name="'.$name.'" value="'.$value.'">';
 	}
 
 	/**
@@ -141,9 +154,23 @@ class CustomForm extends Form
 	 * @param   $addnowlink   add now link
 	 * @return  string        input HTML
 	 */
-	public function dateInput($name, $value, $addnowlink = 1)
+	public function dateInput($name, $value, $addnowlink = true)
 	{
 		return $this->select_date($value, $name, 0, 0, 1, '', 1, $addnowlink, 1);
+	}
+
+	/**
+	 * Return a datetime input
+	 *
+	 * @since   2.9.4
+	 * @param   $name         input name
+	 * @param   $value        input value
+	 * @param   $addnowlink   add now link
+	 * @return  string        input HTML
+	 */
+	public function datetimeInput($name, $value, $addnowlink = true)
+	{
+		return $this->select_date($value, $name, 1, 1, 1, '', 1, $addnowlink, 1);
 	}
 
 	/**
@@ -152,19 +179,29 @@ class CustomForm extends Form
 	 * @param   $name       list name
 	 * @param   $values     list values
 	 * @param   $selected   list selected value
-	 * @param   $show_empty show empty value
+	 * @param   $show_empty show empty value, 0 no empty value allowed, 1 or string to add an empty value into list (key is -1 and value is '' or '&nbsp;' if 1, key is -1 and value is text if string), <0 to add an empty value with key that is this value.
+	 * @param   $translate  translate values
 	 * @return  string      list HTML
 	 */
-	public function listInput($name, $values, $selected, $show_empty = 0)
+	public function listInput($name, $values, $selected, $show_empty = 0, $translate = true)
 	{
-		global $langs;
+		return $this->selectarray($name, $values, $selected, $show_empty, 0, 0, '', $translate, 0, 0, '', 'dolibase_select');
+	}
 
-		// Translate list values
-		foreach ($values as $key => $value) {
-			$values[$key] = $langs->trans($value);
-		}
-
-		return $this->selectarray($name, $values, $selected, $show_empty);
+	/**
+	 * Return a multi select list
+	 *
+	 * @since   2.9.5
+	 * @param   $name       list name
+	 * @param   $values     list values
+	 * @param   $selected   list selected value
+	 * @param   $translate  translate values
+	 * @param   $width      list width
+	 * @return  string      list HTML
+	 */
+	public function multiSelectListInput($name, $values, $selected, $translate = true, $width = '100%')
+	{
+		return $this->multiselectarray($name, $values, $selected, 0, 0, '', $translate, $width);
 	}
 
 	/**

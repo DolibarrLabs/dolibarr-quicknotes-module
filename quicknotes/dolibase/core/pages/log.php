@@ -15,8 +15,8 @@
  * 
  */
 
-dolibase_include_once('/core/class/form_page.php');
-dolibase_include_once('/core/class/query_builder.php');
+dolibase_include_once('core/class/form_page.php');
+dolibase_include_once('core/class/query_builder.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 
 /**
@@ -36,10 +36,10 @@ class LogPage extends FormPage
 		global $langs, $dolibase_config;
 
 		// Load lang files
-		$langs->load("log_page@".$dolibase_config['langs']['path']);
+		$langs->load('log_page@'.$dolibase_config['main']['path']);
 
 		// Add CSS files
-		$this->appendToHead('<link rel="stylesheet" type="text/css" href="'.dolibase_buildurl('/core/css/banner.css.php').'">'."\n");
+		$this->appendToHead('<link rel="stylesheet" type="text/css" href="'.dolibase_buildurl('core/css/banner.css.php').'">'."\n");
 
 		parent::__construct($page_title, $access_perm);
 	}
@@ -51,7 +51,7 @@ class LogPage extends FormPage
 	protected function loadDefaultActions()
 	{
 		// Purge search criteria
-		if (GETPOST("button_removefilter_x") || GETPOST("button_removefilter")) // Both test are required to be compatible with all browsers
+		if (GETPOST('button_removefilter_x') || GETPOST('button_removefilter')) // Both test are required to be compatible with all browsers
 		{
 			$_POST = array();
 			//$_GET  = array(); // id & ref should not be removed
@@ -74,16 +74,19 @@ class LogPage extends FormPage
 	 * @param     $object         object
 	 * @param     $list_link      link to list
 	 * @param     $morehtmlleft   more html in the left
+	 * @return    $this
 	 */
 	public function showBanner($object, $list_link = '', $morehtmlleft = '')
 	{
 		global $langs;
 
-		$morehtml = (empty($list_link) ? '' : '<a href="'.dol_buildpath($list_link, 1).'">'.$langs->trans("BackToList").'</a>');
+		$morehtml = (empty($list_link) ? '' : '<a href="'.dol_buildpath($list_link, 1).'">'.$langs->trans('BackToList').'</a>');
 
 		dol_banner_tab($object, 'ref', $morehtml, 1, 'ref', 'ref', '', '', 0, $morehtmlleft);
 
 		//echo '<div class="underbanner clearboth"></div>';
+
+		return $this;
 	}
 
 	/**
@@ -91,6 +94,7 @@ class LogPage extends FormPage
 	 *
 	 * @param     $object_id          object id
 	 * @param     $object_element     object element
+	 * @return    $this
 	 */
 	public function printLogs($object_id, $object_element = '')
 	{
@@ -147,7 +151,7 @@ class LogPage extends FormPage
 
 		// List header
 		echo '<tr class="liste_titre">';
-		print_liste_field_titre("LogAction", $_SERVER["PHP_SELF"],"t.action","",$param,'align="left"',$sortfield,$sortorder);
+		print_liste_field_titre("LogAction", $_SERVER["PHP_SELF"], "t.action", "", $param, 'align="left"', $sortfield, $sortorder);
 		print_liste_field_titre("LogDate", $_SERVER["PHP_SELF"], "t.datec", "", $param, 'align="center"', $sortfield, $sortorder);
 		print_liste_field_titre("LogUser", $_SERVER["PHP_SELF"], "t.fk_user", "", $param, 'align="left"', $sortfield, $sortorder);
 		print_liste_field_titre('');
@@ -195,7 +199,7 @@ class LogPage extends FormPage
 				echo '<td align="center">';
 				echo dolibase_print_date($row->datec, 'dayhour');
 				if ($deltadateforuser) {
-					echo ' '.$langs->trans("CurrentHour").' / '.dol_print_date($db->jdate($row->datec)+($deltadateforuser*3600), "dayhour").' '.$langs->trans("ClientHour");
+					echo ' '.$langs->trans('CurrentHour').' / '.dol_print_date($db->jdate($row->datec)+($deltadateforuser*3600), 'dayhour').' '.$langs->trans('ClientHour');
 				}
 				echo '</td>';
 
@@ -218,5 +222,7 @@ class LogPage extends FormPage
 		echo '</div>';
 
 		echo '</form>';
+
+		return $this;
 	}
 }

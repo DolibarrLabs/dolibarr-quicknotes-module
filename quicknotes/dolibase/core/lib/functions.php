@@ -31,7 +31,32 @@ if (! function_exists('compare_version'))
 		$version_digits = explode('.', $version);
 		$version_to_digits = explode('.', $version_to);
 
-		if ($sign == '>' || $sign == '>=')
+		if (! in_array($sign, array('>', '>=', '<', '<=')))
+		{
+			dolibase_error('Wrong sign='.$sign.' provided to '.__FUNCTION__, true);
+		}
+
+		// 1st - try using built-in dolibarr function
+		else if (function_exists('versioncompare'))
+		{
+			$result = versioncompare($version_digits, $version_to_digits);
+
+			if ($sign == '>') {
+				return ($result > 0);
+			}
+			else if ($sign == '>=') {
+				return ($result >= 0);
+			}
+			else if ($sign == '<') {
+				return ($result < 0);
+			}
+			else if ($sign == '<=') {
+				return ($result <= 0);
+			}
+		}
+
+		// 2nd - try using dolibase own implementation
+		else if ($sign == '>' || $sign == '>=')
 		{
 			$greater_than = $version_digits[0] > $version_to_digits[0] || 
 			(isset($version_to_digits[1]) && $version_digits[0] == $version_to_digits[0] && $version_digits[1] > $version_to_digits[1]) || 
@@ -46,10 +71,6 @@ if (! function_exists('compare_version'))
 			(isset($version_to_digits[2]) && $version_digits[0] == $version_to_digits[0] && $version_digits[1] == $version_to_digits[1] && $version_digits[2] < $version_to_digits[2]) ? true : false;
 
 			return ($sign == '<=' ? (($version == $version_to) || $lesser_than) : $lesser_than);
-		}
-		else
-		{
-			dolibase_error('Wrong sign='.$sign.' provided to '.__FUNCTION__, true);
 		}
 	}
 }
@@ -80,6 +101,7 @@ if (! function_exists('dolibase_include_once'))
  *
  * @param     $component_path     Dolibase component path
  * @param     $as_url             Return path as url
+ * @return    string              File path or url
  */
 if (! function_exists('dolibase_buildpath'))
 {
@@ -89,7 +111,7 @@ if (! function_exists('dolibase_buildpath'))
 
 		$path = preg_replace('/^\//', '', $component_path); // Clean the path
 
-		if ($dolibase_config['main']['path'] == '/dolibase') {
+		if (preg_match('/^\/?dolibase$/', $dolibase_config['main']['path'])) {
 			return ($as_url ? DOL_URL_ROOT : DOL_DOCUMENT_ROOT).'/dolibase/'.$path;
 		}
 
@@ -101,6 +123,7 @@ if (! function_exists('dolibase_buildpath'))
  * Return Dolibase components full url (alias for dolibase_buildpath function)
  *
  * @param     $component_path     Dolibase component path
+ * @return    string              File url
  */
 if (! function_exists('dolibase_buildurl'))
 {
@@ -113,19 +136,19 @@ if (! function_exists('dolibase_buildurl'))
 /**
  * Return Dolibase relative path
  *
- * Possible values: '/dolibase', '/module/dolibase'
+ * @return     string     Dolibase relative path as 'dolibase' or 'module/dolibase'
  */
 if (! function_exists('get_dolibase_path'))
 {
 	function get_dolibase_path()
 	{
 		if (file_exists(DOL_DOCUMENT_ROOT . '/dolibase')) {
-			return '/dolibase';
+			return 'dolibase';
 		}
 		else {
 			global $dolibase_config;
 
-			return '/'.$dolibase_config['module']['folder'].'/dolibase';
+			return $dolibase_config['module']['folder'].'/dolibase';
 		}
 	}
 }
@@ -160,6 +183,36 @@ if (! function_exists('GETPOSTDATE'))
 		}
 		else {
 			$date = GETPOST($date_input_name);
+		}
+
+		if ($convert_to_db_format) {
+			global $db;
+
+			return empty($date) ? null : $db->idate($date);
+		}
+		else {
+			return $date;
+		}
+	}
+}
+
+/**
+ * Return posted datetime
+ *
+ * @since      2.9.4
+ * @param      $datetime_input_name   datetime input name
+ * @param      $convert_to_db_format  should convert the datetime to database format or not
+ * @return     string                 datetime in your db format, null if error/empty
+ */
+if (! function_exists('GETPOSTDATETIME'))
+{
+	function GETPOSTDATETIME($datetime_input_name, $convert_to_db_format = false)
+	{
+		if (is_submitted($datetime_input_name.'hour') && is_submitted($datetime_input_name.'min') && is_submitted($datetime_input_name.'month') && is_submitted($datetime_input_name.'day') && is_submitted($datetime_input_name.'year')) {
+			$date = dol_mktime(GETPOST($datetime_input_name.'hour'), GETPOST($datetime_input_name.'min'), 0, GETPOST($datetime_input_name.'month'), GETPOST($datetime_input_name.'day'), GETPOST($datetime_input_name.'year'));
+		}
+		else {
+			$date = GETPOST($datetime_input_name);
 		}
 
 		if ($convert_to_db_format) {
@@ -358,12 +411,12 @@ if (! function_exists('dolibase_error'))
 {
 	function dolibase_error($error, $die = false)
 	{
-		$error_prefix = 'DolibaseError: ';
+		$error_message = 'DolibaseError: '.$error;
 
 		if ($die) {
-			die($error_prefix.$error);
+			die($error_message);
 		} else {
-			dol_print_error('', $error_prefix.$error);
+			dol_print_error('', $error_message);
 		}
 	}
 }
@@ -437,7 +490,8 @@ if (! function_exists('start_time_measure'))
 	{
 		global $debugbar;
 
-		if (is_object($debugbar)) {
+		if (is_object($debugbar))
+		{
 			if (! empty($stop_name)) {
 				stop_time_measure($stop_name);
 			}
@@ -468,7 +522,7 @@ if (! function_exists('stop_time_measure'))
  *
  * @see http://php.net/manual/fr/function.get-object-vars.php#62470
  * @param     $obj     Object
- * @return    array
+ * @return    array    Object as an array
  */
 if (! function_exists('object_to_array'))
 {
@@ -540,7 +594,8 @@ if (! function_exists('array_match'))
 {
 	function array_match($pattern, $array, &$matches)
 	{
-		foreach ($array as $value) {
+		foreach ($array as $value)
+		{
 			$result = preg_match($pattern, $value, $matches);
 			if ($result) {
 				return $result;
@@ -548,5 +603,63 @@ if (! function_exists('array_match'))
 		}
 
 		return 0;
+	}
+}
+
+/**
+ * Converts an array values to string separated by a delimiter
+ *
+ * @since     2.9.3
+ * @param     $array     Array
+ * @param     $delimiter Values delimiter
+ * @return    string     array values string separated by the delimiter or empty string if array is empty
+ */
+if (! function_exists('array_to_string'))
+{
+	function array_to_string($array, $delimiter = ',')
+	{
+		return (is_array($array) && ! empty($array) ? join($delimiter, $array) : '');
+	}
+}
+
+/**
+ * Converts a string into an array using a delimiter to separate/get the values
+ *
+ * @since     2.9.3
+ * @param     $str       String
+ * @param     $delimiter Values delimiter
+ * @return    array      array filled with values from string as ['value' => 'value'] or empty array if string is empty
+ */
+if (! function_exists('string_to_array'))
+{
+	function string_to_array($str, $delimiter = ',')
+	{
+		$arr = array();
+
+		if (! empty($str))
+		{
+			foreach (explode($delimiter, $str) as $value) {
+				$trimed_value = trim($value);
+				$arr[$trimed_value] = $trimed_value;
+			}
+		}
+
+		return $arr;
+	}
+}
+
+/**
+ * Returns if javascript/jquery is enabled
+ *
+ * @since     2.9.3
+ * @return    boolean    true if javascript is enabled, else false
+ */
+if (! function_exists('js_enabled'))
+{
+	function js_enabled()
+	{
+		global $conf;
+
+		return (! empty($conf->use_javascript_ajax) && empty($conf->dol_use_jmobile));
 	}
 }

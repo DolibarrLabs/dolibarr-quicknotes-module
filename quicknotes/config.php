@@ -9,7 +9,7 @@ global $dolibase_config;
 $dolibase_config['module'] = array(
 	'name'                      => 'QuickNotes',
 	'desc'                      => 'QuickNotesDescription',
-	'version'                   => '1.1',
+	'version'                   => '1.2',
 	'number'                    => '455000',
 	'family'                    => 'other',
 	'position'                  => 500,

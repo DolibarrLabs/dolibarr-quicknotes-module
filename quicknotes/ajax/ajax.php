@@ -1,5 +1,7 @@
 <?php
 
+define('NOTOKENRENEWAL', 1);
+
 // Load Dolibase
 include_once '../autoload.php';
 

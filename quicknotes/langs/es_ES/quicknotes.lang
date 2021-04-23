@@ -1,0 +1,13 @@
+# MÓDULO DE NOTAS RÁPIDAS - es_ES
+#
+# Copyright (C) 2021 AXeL
+
+#
+# Genérico
+#
+QuickNotes = Notas rápidas
+QuickNotesDescription = Permite a cada usuario tomar y ver sus notas desde cualquier página de Dolibarr
+Notes = Notas
+ClearAll = Borrar
+SaveAndClose = Guardar y cerrar
+ErrorWhileSaving = Error al guardar.

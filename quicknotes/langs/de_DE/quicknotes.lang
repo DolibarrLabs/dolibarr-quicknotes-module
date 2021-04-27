@@ -1,0 +1,14 @@
+# QUICKNOTES MODULE - de_DE
+#
+# Copyright (C) 2018 AXeL
+# Translation (C) 2021 by UT dolibit
+
+#
+# Generic / Allgemein
+#
+QuickNotes = Quick-Notes
+QuickNotesDescription = Ermöglicht jedem Benutzer, seine Notizen von jeder Dolibarr-Seite aus zu erstellenn und anzusehen
+Notes = Notizen
+ClearAll = Inhalte löschen
+SaveAndClose = Speichern & Schließen
+ErrorWhileSaving = Fehler beim Speichern ..
